@@ -1,13 +1,8 @@
 import React from 'react';
 import './App.css';
 
+
 class DisplayQuestion extends React.Component{
-  let selected = "";
-
-  onValueChange(event){
-    selected = event.target.value;
-  }
-
   render(){
     return(
       <div>
@@ -15,26 +10,26 @@ class DisplayQuestion extends React.Component{
         <form>
           <div>
             <input type="radio" value="ans1"
-            checked={selected === "ans1"}
-            onChange={(e) => this.onValueChange(e)}/>
+            checked={() => this.props.selectionChecker(this.props.ans1, this.props.questionNumber)}
+            onChange={() => this.props.answerChanger(this.props.ans1, this.props.questionNumber)}/>
             {this.props.ans1}
           </div>
           <div>
             <input type="radio" value="ans2"
-            checked={selected === "ans2"}
-            onChange={(e) => this.onValueChange}/>
+            checked={() => this.props.selectionChecker(this.props.ans2, this.props.questionNumber)}
+            onChange={() => this.props.answerChanger(this.props.ans2, this.props.questionNumber)}/>
             {this.props.ans2}
           </div>
           <div>
             <input type="radio" value="ans3"
-            checked={selected === "ans3"}
-            onChange={(e) => this.onValueChange}/>
+            checked={() => this.props.selectionChecker(this.props.ans3, this.props.questionNumber)}
+            onChange={() => this.props.answerChanger(this.props.ans3, this.props.questionNumber)}/>
             {this.props.ans3}
           </div>
           <div>
             <input type="radio" value="ans4"
-            checked={selected === "ans4"}
-            onChange={(e) => this.onValueChange}/>
+            checked={() => this.props.selectionChecker(this.props.ans4, this.props.questionNumber)}
+            onChange={() => this.props.answerChanger(this.props.ans4, this.props.questionNumber)}/>
             {this.props.ans4}
           </div>
         </form>
@@ -45,19 +40,37 @@ class DisplayQuestion extends React.Component{
 
 class App extends React.Component {
   state={
-    quizQuests: [ Array(this.props.quiz.length).fill(false) ],
+    chosenAnswers: [ Array(this.props.quiz.length).fill(false) ],
+  }
+
+  changeAnswer(newAnswer, questionNumber){
+    let modifiedArray = this.state.chosenAnswers;
+    modifiedArray[questionNumber] = newAnswer;
+    this.setState({
+      chosenAnswers: modifiedArray
+    });
+    console.log("ans change");
+  }
+  
+  checkIfSelected(answerToCheck, questionNumber){
+    return (answerToCheck === this.state.chosenAnswers[questionNumber]);
   }
     
   render(){
     let questions = [];
+    let questionNumber = -1;
     this.props.quiz.forEach(element => {
+      questionNumber++;
       questions.push(
-        <DisplayQuestion question={element[0]}
+        <DisplayQuestion questionNumber={questionNumber}
+          question={element[0]}
           ans1={element[1]}
           ans2={element[2]}
           ans3={element[3]}
           ans4={element[4]}
-          cor={element[5]}/>
+          correct={element[5]}
+          answerChanger={(i, j) => this.checkIfSelected(i, j)}
+          selectionChecker={(i, j) => this.changeAnswer(i, j)}/>
       )
     });
     return (
